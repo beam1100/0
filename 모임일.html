@@ -1,0 +1,112 @@
+ <!DOCTYPE html>
+<html>
+<head>
+	<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script  src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
+	<title></title>
+</head>
+
+
+
+
+<body>
+<설명> <br/><br/>
+주야비휴 4부제 근무이고, 주간·비번일에 모임에 참석 가능하고, 오늘이 야간 근무라면,<br/><br/>
+근무주기: (주야비휴 4개 이므로) 4입력<br/><br/>
+쉬 는 날: (근무주기에서 주간은 첫 번째, 비번은 세 번째이므로) 1,3입력<br/><br/>
+오늘근무: (근무주기에서 야간은 두 번째이므로) 2입력<br/><br/><br/>
+<script type="text/javascript">
+var count = 1;
+var d = 180;
+
+function plus(){
+	$( ".inner" ).append( "</br></br></br>    <table>    <tr> <td> 이름 </td> <td> <input type='text' id='name" +count + "'> </td> </tr> <tr> <td> 근무주기 </td> <td> <input type='text' id='per" + count + "'> </td> </tr> <tr> <td> 쉬 는 날 </td> <td> <input type='text' id='hol" + count + "'> </td> </tr> <tr> <td> 오늘근무 </td> <td> <input type='text' id='today" + count + "'> </table> </td> </tr>" );
+	count = count +1;
+	
+}
+
+function cal(){
+	var name = []; 		var per = []; 		var today = []; 		var li = []; // 쉬는날을 저장할 배열 	
+	var dic = {};		var day = [];		
+	// var check=[];
+
+	var sum = []; // 일별 참석자를 저장할 2차 배열
+	for(var j = 0; j<d; j++){
+	    sum[j] = new Array();
+	}
+
+
+	for(i=0; i<count; i++){ //사람이 반복됨.
+
+		name[i] = document.getElementById('name'+i).value; //이름 전달
+		var per_ = document.getElementById('per'+i).value;
+		per[i] = parseInt(per_); // 근무주기
+
+		var hol = document.getElementById('hol'+i).value; // 쉬는날
+		hol.replace(" ", "");
+		li[i] = hol.split(','); 
+		for(j in li[i]){
+			li[i][j] = parseInt(li[i][j])-1;
+		}
+		var today_ = document.getElementById('today'+i).value;
+		today[i] = parseInt(today_)-1; // 오늘 근무
+
+
+		var start = moment(); //오늘 날짜
+		start.format('MM/DD/YYYY');
+		var plus = moment(); //추가될 날짜
+		plus.format('MM/DD/YYYY');
+		
+		dic[i] = {}; // '날짜':'근무형태'를 입력될 딕셔너리
+		
+		for(var j = 0; j<d; j++, today[i]++){ // 날짜 반복
+			var val = today[i]%per[i]; //오늘 근무(++1)를 주기로 나눈 나머지(근무)
+			plus = moment(start).add('day',j).calendar(); //(++1)
+			dic[i][plus] = val; // 날짜를 키에 나머지(근무)를 밸류에 저장
+			if(li[i].includes(val)){
+				sum[j].push(name[i])
+			}
+		}
+
+		// var check = Object.keys(dic[i]).map(function (key) { return dic[i][key]; }); // dic에서 개인의 참석여부를 저장하는 배열
+		var day = Object.keys(dic[i]); // dic에서 날짜를 나타내는 키값을 배열로 만듦.
+
+	}
+	
+	for(j=0; j<d; j++){
+		$( ".inner" ).append("<span class='print'>"+"<br/><br/>"+"</span>");	
+		$( ".inner" ).append("<span class='print'>"+day[j]+" : ("+sum[j].length+")    </span>");	
+		for(k=0; k<sum[j].length; k++){
+			$( ".inner" ).append("<span class='print'>"+sum[j][k]+"    </span>");	
+		}
+	}
+}
+
+function del(){
+	$('span').remove();
+}
+
+</script>
+<input type="button" value="사람추가" onclick="plus()">
+<input type="button" value="계산하기" onclick="cal()">
+<input type="button" value="결과 지우기" onclick="del()"></br></br></br>
+
+<table border="0">
+<tr>
+<td>이름</td	><td><input type="text" id="name0"> </td>
+</tr>
+<tr>
+<td>근무주기</td><td><input type="text" id="per0"></td>
+<tr>
+<td>쉬는날</td><td><input type="text" id="hol0"> </td>
+<tr>
+<td>오늘근무</td><td><input type="text" id="today0"></td>
+</tr>
+</table><div class = "inner"></div> 
+
+</body>
+
+
+
+
+</html>
